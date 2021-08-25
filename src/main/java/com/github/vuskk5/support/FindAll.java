@@ -12,7 +12,18 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 
 /**
- * @see org.openqa.selenium.support.FindAll
+ * Used to mark a field on a Page Object to indicate that lookup should use a series of @Find tags
+ * It will then search for all elements that match any of the Find criteria. Note that elements
+ * are not guaranteed to be in document order.
+ *
+ * It can be used on a types as well, but will not be processed by default.
+ *
+ * Eg:
+ *
+ * <pre class="code">
+ * &#64;FindAll({ &#64;Find(id = "foo"),
+ *            &#64;Find(className = "bar") })
+ * </pre>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.TYPE})
