@@ -10,7 +10,6 @@ import com.github.vuskk5.support.Find;
 import com.github.vuskk5.support.internal.WebComponentFactory;
 import lombok.SneakyThrows;
 import org.openqa.selenium.By;
-import org.openqa.selenium.support.pagefactory.ByChained;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -57,8 +56,7 @@ public class WebPage {
     @CheckReturnValue
     @Nonnull
     public static <T extends WebComponent> List<T> $$(By innerOrRootLocator, Class<T> containerType) {
-        int size = Selenide.$$(new ByChained(innerOrRootLocator,
-                                             Find.FindByBuilder.parseClassRootToLocator(containerType)))
+        int size = Selenide.$$(Find.FindByBuilder.parseClassRootToLocator(innerOrRootLocator, containerType))
                            .size();
 
         return range(0, size).mapToObj(index -> wrapElement(innerOrRootLocator, index, containerType))
@@ -82,8 +80,7 @@ public class WebPage {
 
         WebElementSource context = (WebElementSource) constructor.newInstance(WebDriverRunner.driver(),
                                                                               null,
-                                                                              new ByChained(criteria,
-                                                                                            Find.FindByBuilder.parseClassRootToLocator(componentType)),
+                                                                              Find.FindByBuilder.parseClassRootToLocator(criteria, componentType),
                                                                               index);
         constructor.setAccessible(isAccessible);
 

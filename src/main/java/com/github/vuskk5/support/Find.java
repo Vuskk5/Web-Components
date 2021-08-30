@@ -2,7 +2,7 @@ package com.github.vuskk5.support;
 
 import com.github.vuskk5.WebComponent;
 import com.github.vuskk5.support.internal.EnhancedFindByBuilder;
-import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactoryFinder;
@@ -10,6 +10,7 @@ import org.openqa.selenium.support.pagefactory.ByChained;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -104,6 +105,8 @@ public @interface Find {
      */
     String dataTestId() default "";
 
+    @Slf4j
+    @ParametersAreNonnullByDefault
     class FindByBuilder extends EnhancedFindByBuilder {
         /**
          * <p>Create the {@link By} locator from the given annotation.
@@ -132,29 +135,34 @@ public @interface Find {
             }
 
             if (WebComponent.class.isAssignableFrom(type)) {
-                return new ByChained(locator, parseClassRootToLocator(type));
+                return parseClassRootToLocator(locator, type);
             }
 
             return locator;
         }
 
-        public static By parseClassRootToLocator(@NonNull Class<?> annotatedType) {
+        public static By parseClassRootToLocator(By originalLocator, Class<?> annotatedType) {
             Root rootLocator = annotatedType.getAnnotation(Root.class);
 
             if (rootLocator == null) {
-                throw new IllegalStateException(annotatedType + " must be annotated with " + Root.class.getSimpleName());
+                log.warn("%s is not annotated with %s, locating without ancestor.".formatted(annotatedType,
+                                                                                             Root.class.getSimpleName()));
+                return originalLocator;
             }
 
             if (!"".equals(rootLocator.tagName()))
-                return byXpath("ancestor-or-self::" + rootLocator.tagName());
+                return new ByChained(originalLocator,
+                                     byXpath("ancestor-or-self::" + rootLocator.tagName()));
 
             if (!"".equals(rootLocator.className()))
-                return byXpath("ancestor-or-self::*[contains(concat(' ', normalize-space(@class), ' '), ' " + rootLocator.className() + " ')][1]");
+                return new ByChained(originalLocator,
+                                     byXpath("ancestor-or-self::*[contains(concat(' ', normalize-space(@class), ' '), ' " + rootLocator.className() + " ')][1]"));
 
             if (!"".equals(rootLocator.partialClassName()))
-                return byXpath("ancestor-or-self::*[contains(@class, '" + rootLocator.partialClassName() + "')]");
+                return new ByChained(originalLocator,
+                                     byXpath("ancestor-or-self::*[contains(@class, '" + rootLocator.partialClassName() + "')]"));
 
-            throw new IllegalArgumentException(Root.class.getSimpleName() + " must be passed exactly 1 parameter");
+            throw new IllegalArgumentException("No location strategy was provided.");
         }
 
         @CheckReturnValue

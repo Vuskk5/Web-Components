@@ -1,5 +1,7 @@
 # Web Component Framework
-This project provides a solution for composing 'Web Components' when testing systems developed using component-based frameworks (React, Vue, Angular...)
+This project provides a solution for composing 'Web Components' when testing systems developed using component-based frameworks (React, Vue, Angular...)  
+
+Also provided are some useful extensions and shortcuts for locating elements. 
 
 # Contents
 
