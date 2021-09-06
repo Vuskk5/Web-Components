@@ -23,7 +23,6 @@ public class BuilderAndFactoryTests extends IntegrationTest {
         Assertions.assertThat(page.annotationComponent.label.toString()).isEqualTo(page.builderComponent.label.toString());
     }
 
-
     private static class MultipleComponentPage {
         @Find(text = "Text 1")
         TextComponent annotationComponent;
