@@ -50,7 +50,7 @@ private WebElement element;
 ```
 
 # WebComponent
-Components are the core feature of the framework, they allow you to create and map your HTML elements to your Java code.  
+Components are the core feature of the framework, they allow you to create and map your HTML components to your Java code.  
 The best way to explain them would be with an example, consider the following HTML:
 ```html
 <div class="textfield-wrapper">
@@ -59,10 +59,10 @@ The best way to explain them would be with an example, consider the following HT
     <input type="button" value="verify">
 </div>
 ```
-Clearly we have a single text element which is composed of multiple other elements.  
-The element's root is the `<div>` tag. The `<label>` and `<input>`s, are the child elements.
+Clearly we have a single 'textfield' element which is composed of multiple other elements.  
+The element's root is the `<div>` tag. The `<label>`, `<input>` and `<button>`, are the child elements.
 
-For regular Selenium code a solution to automate this in page-object pattern, might look like this:
+For regular Selenium code, a simple solution to automate this in page-object pattern, might look like this:
 
 ```java
 import org.openqa.selenium.WebElement;
@@ -131,7 +131,50 @@ class TextField extends WebComponent {
     }
 }
 ```
+And the last great thing is the support of lists of components:
+```java
+class Page {
+    @Find(className = "textfield-wrapper")
+    List<TextField> textfields;
+}
+```
 ## @Root
+The `@Root` annotation allows the definition of the Component's root element.  
+Every 'Component' must have a root, its it's Search Context. All elements which are defined in a `WebComponent` are searched under the root element.   
+The annotation only defines if and how the root will be located, meaning that when the `@Root` annotation is present, you do not have to provide a locator of the root itself, you can provide an inner locator which will then automatically find the root.  
+All of this may be a bit confusing, take a look at the following:
+```html
+<body>
+    <div class="textfield-wrapper">
+        <label>First Input</label>
+        <input type="text"/>
+        <input type="button" value="verify">
+    </div>
+    <div class="textfield-wrapper">
+        <label>Second Input</label>
+        <input type="text"/>
+        <input type="button" value="verify">
+    </div>
+</body>
+```
+When we try to locate the second field using `css(.textfield-wrapper)` we will still get the first element, but when the `@Root` is added we can locate the `<label>` by its inner text:
+```java
+import com.github.vuskk5.support.Root;
 
+@Root(className = "textfield-wrapper")
+class TextField extends WebComponent {
+    @Find(tagName = "label")
+    WebElement label;
+
+    @Find(css = "[type='text']")
+    WebElement input;
+}
+
+class Page {
+    @Find(text = "Second Input")
+    TextField textfield;
+}
+```
+This will locate the element matching the given text, in this case it would be the `<label>` tag, and then it will find an ancestor of this tag, with the class "textfield-wrapper", thus finding the component's root.
 # WebPage
 ## Dollar Methods
