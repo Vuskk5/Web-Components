@@ -50,6 +50,87 @@ private WebElement element;
 ```
 
 # WebComponent
+Components are the core feature of the framework, they allow you to create and map your HTML elements to your Java code.  
+The best way to explain them would be with an example, consider the following HTML:
+```html
+<div class="textfield-wrapper">
+    <label>Some Header</label>
+    <input type="text"/>
+    <input type="button" value="verify">
+</div>
+```
+Clearly we have a single text element which is composed of multiple other elements.  
+The element's root is the `<div>` tag. The `<label>` and `<input>`s, are the child elements.
+
+For regular Selenium code a solution to automate this in page-object pattern, might look like this:
+
+```java
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+
+class Page {
+    @FindBy(css = ".textfield-wrapper > label")
+    WebElement textFieldLabel;
+    
+    @FindBy(css = ".textfield-wrapper > [type='text']")
+    WebElement textFieldInput;
+
+    @FindBy(css = ".textfield-wrapper > [type='button']")
+    WebElement textFieldButton;
+}
+```
+So for a single field on a page, we had to declare 3 `WebElement`s.  
+
+Now take a look at the Web Component approach:
+
+```java
+import com.github.vuskk5.WebComponent;
+import com.github.vuskk5.support.Find;
+import org.openqa.selenium.WebElement;
+
+class TextField extends WebComponent {
+    @Find(tagName = "label")
+    WebElement label;
+
+    @Find(css = "[type='text']")
+    WebElement input;
+
+    @Find(attribute = "type", attributeValue = "button")
+    WebElement button;
+}
+
+class Page {
+    @Find(className = "textfield-wrapper")
+    TextField textfield;
+}
+```
+After creating the component and mapping its child elements, the `Page` class has only a single field.  
+It has the same functionality just like the previous example, but now, instead of accessing elements directly from the 
+page, we need to call the component, and then it's child element. like so:
+```java
+var page = new Page();
+var field = page.textfield;
+
+field.label.getText();   // "Some Header"
+field.input.sendKeys("Hello World!");
+field.button.click();
+```
+Of course that wrapper methods can also be added to the components:
+
+```java
+import com.github.vuskk5.WebComponent;
+
+class TextField extends WebComponent {
+    ...
+
+    public TextField set(String text) {
+        if (this.input.getAttribute("value") != null) {
+            this.input.clear();
+        }
+        this.input.sendKeys(text);
+    }
+}
+```
 ## @Root
 
 # WebPage
