@@ -1,4 +1,4 @@
-package com.github.vuskk5.driver;
+package com.github.vuskk5.drivermanager;
 
 public enum DriverType {
     CHROME,

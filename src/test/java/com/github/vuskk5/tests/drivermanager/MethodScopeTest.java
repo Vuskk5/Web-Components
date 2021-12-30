@@ -1,6 +1,6 @@
 package com.github.vuskk5.tests.drivermanager;
 
-import com.github.vuskk5.driver.DriverManager;
+import com.github.vuskk5.drivermanager.DriverManager;
 import com.github.vuskk5.listeners.MethodScopeDriver;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.Listeners;

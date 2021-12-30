@@ -1,4 +1,4 @@
-package com.github.vuskk5.driver;
+package com.github.vuskk5.drivermanager;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;

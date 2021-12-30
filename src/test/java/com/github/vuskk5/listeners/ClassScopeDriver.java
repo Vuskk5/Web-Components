@@ -1,6 +1,6 @@
 package com.github.vuskk5.listeners;
 
-import com.github.vuskk5.driver.DriverManager;
+import com.github.vuskk5.drivermanager.DriverManager;
 import org.testng.IClassListener;
 import org.testng.ITestClass;
 
